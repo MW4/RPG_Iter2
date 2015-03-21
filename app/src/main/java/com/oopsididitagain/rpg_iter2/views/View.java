@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import com.oopsididitagain.rpg_iter2.model_view_interaction.GameViewInteraction;
 import com.oopsididitagain.rpg_iter2.model_view_interaction.MainMenuViewInteraction;
 import com.oopsididitagain.rpg_iter2.model_view_interaction.ModelViewInteraction;
+import com.oopsididitagain.rpg_iter2.model_view_interaction.NPCViewInteraction;
 
 public class View extends JPanel{
 	//abstract out viewports later
@@ -41,6 +42,12 @@ public class View extends JPanel{
 		
 		
 	}
+	
+	public void visit(NPCViewInteraction npcViewInteraction){
+		this.modelViewInteraction = npcViewInteraction;
+		this.repaint();
+	}
+	
 	public void paint(MainMenuViewInteraction mainMenuView, Graphics g){
 		
 	}

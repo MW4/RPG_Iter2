@@ -15,11 +15,23 @@ import com.oopsididitagain.rpg_iter2.utils.Tileable;
 public class Npc extends Entity {
 	
 	Storyline story;
-	public Npc(String id, Position position) {
+	int npcNum = 0;
+	
+	public Npc(String id, Position position, String stry) {
 		super(id, position);
 		// TODO Auto-generated constructor stub
+		story = new Storyline(stry);
+		this.npcNum = npcNum++;
+	}
+	
+	public Storyline getNPCStory(Npc npc){
+		return npc.story;
 	}
 
+	public int getNPCNum(Npc npc){
+		return npc.npcNum;
+	}
+	
 	@Override
 	public void accept(Probe probe) {
 		// TODO Auto-generated method stub

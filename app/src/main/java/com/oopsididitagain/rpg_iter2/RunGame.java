@@ -3,6 +3,12 @@ package com.oopsididitagain.rpg_iter2;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
+import com.oopsididitagain.rpg_iter2.model_view_interaction.NPCViewInteraction;
+import com.oopsididitagain.rpg_iter2.models.Position;
+import com.oopsididitagain.rpg_iter2.models.entities.Npc;
+import com.oopsididitagain.rpg_iter2.models.menus.MainMenu;
+import com.oopsididitagain.rpg_iter2.views.View;
+
 import java.awt.*;
 import java.util.Observer;
 
@@ -16,16 +22,21 @@ public class RunGame extends JFrame{
 private static GameLoop loop;
 //private static MainMenu
 	public static void main(String[] args) throws InterruptedException {
-		loop = new GameLoop();
-	    SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				RunGame runGame = new RunGame();
-				runGame.initialize();
-			}
-	    });
+		View g;
+		Position xy = new Position(0,0);
+		Npc test = new Npc("1", xy, "Hi!");
+		System.out.println(Npc.getNPCStory().getStoryline(0));
+		n.drawModel(g);
+//		loop = new GameLoop();
+	//    SwingUtilities.invokeLater(new Runnable() {
+		//	@Override
+			//public void run() {
+				//RunGame runGame = new RunGame();
+				//runGame.initialize();
+			//}
+	    //});
 
-		loop.runGame();
+		//loop.runGame();
 	}
 	
 	private void initialize() {
