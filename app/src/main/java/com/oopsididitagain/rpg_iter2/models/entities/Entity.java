@@ -2,9 +2,10 @@ package com.oopsididitagain.rpg_iter2.models.entities;
 
 import com.oopsididitagain.rpg_iter2.models.Inventory;
 import com.oopsididitagain.rpg_iter2.models.Position;
+import com.oopsididitagain.rpg_iter2.models.Tile;
 import com.oopsididitagain.rpg_iter2.models.effects.EntityStatusModifier;
 import com.oopsididitagain.rpg_iter2.models.items.InventoryEquipableItem;
-import com.oopsididitagain.rpg_iter2.models.items.PositionedGameObject;
+import com.oopsididitagain.rpg_iter2.models.PositionedGameObject;
 import com.oopsididitagain.rpg_iter2.models.items.TakeableItem;
 import com.oopsididitagain.rpg_iter2.models.items.InventoryUnusableItem;
 import com.oopsididitagain.rpg_iter2.utils.Direction;
@@ -18,7 +19,6 @@ import com.oopsididitagain.rpg_iter2.utils.TiledProbeVisitable;
  */
 public abstract class Entity extends PositionedGameObject implements Positionable, TiledProbeVisitable {
 	protected EntityStatus entityStatus;
-	protected Position position;
 	protected Inventory inventory;
 	protected boolean isCurrentlyFlying;
 
@@ -29,7 +29,7 @@ public abstract class Entity extends PositionedGameObject implements Positionabl
 	
 	@Override
 	public Position getPosition() {
-		return position;
+		return this.position;
 	}
 
 	@Override
@@ -74,5 +74,12 @@ public abstract class Entity extends PositionedGameObject implements Positionabl
 	@Override
 	public TileablePriority getTileablePriority() {
 		return TileablePriority.HIGH;
+	}
+
+	public void move(Tile fromTile, Tile targetTile) {
+		fromTile.remove(this);
+		this.setPosition(targetTile.getPosition());
+		targetTile.add(this);
+		targetTile.interact(this);
 	}
 }
