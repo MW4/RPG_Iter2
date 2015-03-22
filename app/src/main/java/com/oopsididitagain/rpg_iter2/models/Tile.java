@@ -3,13 +3,12 @@ package com.oopsididitagain.rpg_iter2.models;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-
 import com.oopsididitagain.rpg_iter2.models.entities.Entity;
 import com.oopsididitagain.rpg_iter2.utils.Assetable;
 import com.oopsididitagain.rpg_iter2.utils.Direction;
 import com.oopsididitagain.rpg_iter2.utils.InvalidMovementException;
 import com.oopsididitagain.rpg_iter2.utils.Positionable;
-import com.oopsididitagain.rpg_iter2.utils.ProjectileVisitable;
+import com.oopsididitagain.rpg_iter2.utils.TileContentsProbeStatus;
 import com.oopsididitagain.rpg_iter2.utils.Tileable;
 import com.oopsididitagain.rpg_iter2.utils.TiledEntityVisitable;
 import com.oopsididitagain.rpg_iter2.utils.TiledProbeVisitable;
@@ -26,7 +25,18 @@ public class Tile implements Assetable, Positionable {
 		this.position = position;
 		this.terrain = terrain;
 	}
-	
+	public Entity getEntity(){
+		Entity e = null;
+		MovementProbe p = new MovementProbe();
+		this.checkTileContents(p);
+		if(p.checkStatus(TileContentsProbeStatus.ENTITY_DETECTED)){
+			e = p.getReturnedEntity();
+			
+		}
+		return e;
+		
+		
+	}
 	public void interact(Entity entity) {
 		for (TiledEntityVisitable entityVisitable: entityVisitables) {
 			try {

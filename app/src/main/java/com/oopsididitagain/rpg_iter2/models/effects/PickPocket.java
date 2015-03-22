@@ -7,17 +7,18 @@ import com.oopsididitagain.rpg_iter2.models.MiniMap;
 import com.oopsididitagain.rpg_iter2.models.entities.Avatar;
 import com.oopsididitagain.rpg_iter2.models.items.InventoryItem;
 import com.oopsididitagain.rpg_iter2.probes.SkillProbe;
-import com.oopsididitagain.rpg_iter2.utils.Direction;
 
 
 public class PickPocket implements Effect{
-	int numberOfItemsStolen = 1;
+	int numberOfItemsStolen;
 	int baseNumberOfItemsStolen = 1;
+	int baseRadius = 1;
 	int radius;
 	
 	@Override
 	public void applyMultiplier(int m) {
 		numberOfItemsStolen = baseNumberOfItemsStolen * m;
+		radius = baseRadius *m;
 	}
 
 
@@ -35,7 +36,7 @@ public class PickPocket implements Effect{
 
 	@Override
 	public void applySkill(Avatar avatar, MiniMap tiles, SkillProbe skillProbe) {
-		// TODO Auto-generated method stub
+		skillProbe.setUpSkill(this,avatar,tiles);
 		
 	}
 

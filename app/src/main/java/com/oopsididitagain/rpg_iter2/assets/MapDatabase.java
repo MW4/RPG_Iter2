@@ -1,39 +1,33 @@
 package com.oopsididitagain.rpg_iter2.assets;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import com.oopsididitagain.rpg_iter2.models.Terrain;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
 public class MapDatabase {
-	BufferedReader gridReader;
-	File gridFile;
+	private BufferedReader gridReader;
+	private InputStream gridFileStream;
 	
-	BufferedReader objectsReader;
-	File objectsFile;
-    String[][] grid;
+	private BufferedReader objectsReader;
+	private InputStream objectsFileStream;
+
+    String[][] mapGrid;
     int mapX;
     int mapY;
 	
-	public MapDatabase(String filepath) {
-		gridFile = new File(getClass().getResource("/levels/"+filepath+"/grid.csv").getPath());
-		objectsFile = new File(getClass().getResource("/levels/"+filepath+"/tileables.csv").getPath());
-		
-		try { 
-			gridReader = new BufferedReader(new FileReader(gridFile));
-			objectsReader = new BufferedReader(new FileReader(objectsFile));
-		} catch (FileNotFoundException e) {
-			System.out.println("Linking files to readers did not work....");
-			e.printStackTrace();
-		}
+	public MapDatabase(int level) {
+
+		gridFileStream = getClass().getResourceAsStream("/levels/level"+level+"/grid.csv");
+		objectsFileStream = getClass().getResourceAsStream("/levels/level"+level+"/tileables.csv");
+
+		gridReader = new BufferedReader(new InputStreamReader(gridFileStream));
+		objectsReader = new BufferedReader(new InputStreamReader(gridFileStream));
 
         readTerrain();
         readObjects();
-
-
 	}
 
     public int getMapY() {
@@ -44,13 +38,18 @@ public class MapDatabase {
         return mapX;
     }
 
+    public String getObjectsAtYX(int y, int x){
+
+        return mapGrid[y][x];
+    }
+
     private void readTerrain(){
 
         String[] dimensions = readTerrainLine().split(",");
         mapX = Integer.parseInt(dimensions[0]);
         mapY = Integer.parseInt(dimensions[1]);
 
-        grid = new String[mapY][mapX];
+        mapGrid = new String[mapY][mapX];
 
         readTerrainLine(); // blank line
 
@@ -64,7 +63,7 @@ public class MapDatabase {
                 // default behavior if something's wrong with the map
                 for (int j = 0; j < mapX; j++) {
                     System.out.println("Map did not load properly");
-                    grid[i][j] = Terrain.GRASS.getId();
+                    mapGrid[i][j] = Terrain.GRASS.getId();
                 }
                 continue;
             }
@@ -74,13 +73,13 @@ public class MapDatabase {
 
                 switch(array[j]) {
                     case "^":
-                        grid[i][j] = "M";
+                        mapGrid[i][j] = "M";
                         break;
                     case "-":
-                        grid[i][j] = "G" ;
+                        mapGrid[i][j] = "G" ;
                         break;
                     case "~":
-                        grid[i][j] = "W";
+                        mapGrid[i][j] = "W";
                         break;
                     default:
                         System.out.println("Error, unknown terrain type when reading map...");
@@ -98,7 +97,7 @@ public class MapDatabase {
 
     public String getTerrainAtYX(int y, int x){
 
-        return grid[y][x];
+        return mapGrid[y][x];
     }
 
     private void readObjects(){

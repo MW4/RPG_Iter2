@@ -15,13 +15,31 @@ import com.oopsididitagain.rpg_iter2.utils.Direction;
 
 public class Skill {
 
+	public static String BARGAIN = "bargin";
+	public static String ONEHAND = "oneHand";
+	public static String TWOHAND = "oneHand";
+	public static String BRAWL = "brawl";
+	public static String RANGED = "ranged";
+	public static String BINDWOUNDS = "bindwounds";
+	public static String OBSERVATION = "observation";
+	public static String ENCHANTMENT = "enchantment";
+	public static String BOON = "boon";
+	public static String BANE = "bane";
+	public static String STAFF = "staff";
+	public static String PICKPOCKET = "pickpocket";
+	public static String REMOVETRAP = "removetrap";
+	public static String CREEP = "creep";
+	
+
+	
 	int multiplier;
 	Effect effect;
+	String name;
 	boolean active;
 	
-	public Skill(boolean active){
-		this.active = active;
+	public Skill(String name){
 		this.multiplier = 1;
+		this.name = name; 
 	}
 	
 	public void setEffect(Effect effect){
@@ -49,5 +67,8 @@ public class Skill {
 		applyMultiplier();
 		effect.applySkill(avatar,tiles,skillProbe);
 	}
-
+	
+	public String getName(){
+		return name;
+	}
 }

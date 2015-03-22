@@ -1,19 +1,19 @@
-package com.oopsididitagain.rpg_iter2.utils;
+package com.oopsididitagain.rpg_iter2.utils.keyboardInput;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import com.oopsididitagain.rpg_iter2.controllers.menu_controllers.MainMenuController;
-import com.oopsididitagain.rpg_iter2.models.menus.MainMenu;
+import com.oopsididitagain.rpg_iter2.models.menus.AvatarCreationMenu;
+import com.oopsididitagain.rpg_iter2.views.View;
 
-public class MainMenuKeyboardInput extends KeyBoardInput implements KeyListener, MouseListener  {
-	
+public class AvatarCreationMenuKeyboardInput extends KeyBoardInput implements KeyListener, MouseListener{
 	int input;
-	MainMenu mainMenu;
-	public MainMenuKeyboardInput( MainMenu mainMenu){
-		this.mainMenu = mainMenu;
+	AvatarCreationMenu avatarCreationMenu;
+
+	public AvatarCreationMenuKeyboardInput( AvatarCreationMenu avatarCreationMenu){
+		this.avatarCreationMenu = avatarCreationMenu;
 		input = -5;
 	}
 
@@ -29,11 +29,12 @@ public class MainMenuKeyboardInput extends KeyBoardInput implements KeyListener,
 		
 		case 'w':
 			input = 1;
-		
 			break;
-
 		case 'x':
 			input = 2; 
+			break;
+		case KeyEvent.VK_ENTER:
+			input = 4;
 			break;
 
 		}
@@ -63,25 +64,16 @@ public class MainMenuKeyboardInput extends KeyBoardInput implements KeyListener,
 		/*
 		this.newGameButton = new Rectangle(width/2 - 100 , height/2, 200, 50);
 		this.loadGameButton = new Rectangle(width/2 - 100, height/2 + 50 + padding, 200, 50);
-		this.controlsButton = new Rectangle(width/2 - 100, height/2 + 110 + padding, 200, 50);
+		this.controlsButton = nexw Rectangle(width/2 - 100, height/2 + 110 + padding, 200, 50);
        */
-		int mouseX = e.getX();
-		int mouseY = e.getY();
-		
-		if((mouseX >= 200) && (mouseX <= 400)){
-			if((mouseY >= 350) && (mouseY <= 400)){
-				//handle newGameButton
-				mainMenu.setOption(0);
-			}else if((mouseY >= 410) && (mouseY <= 460)){
-				
-				//handle loadGameButton
-				mainMenu.setOption(1);
-			}else if((mouseY >= 470) && (mouseY <= 520)){
-				
-				//handle controlsButton
-				mainMenu.setOption(2);
-			}
-		}
+//		int mouseX = e.getX();
+//
+//		if ((mouseX > 0) && (mouseX < View.WIDTH / 3))
+//			avatarCreationMenu.setOption(0);
+//		else if ((mouseX >= View.WIDTH / 3) && (mouseX < (2 * View.WIDTH) / 3))
+//			avatarCreationMenu.setOption(1);
+//		else
+//			avatarCreationMenu.setOption(2);
 	}
 
 	@Override
@@ -104,5 +96,5 @@ public class MainMenuKeyboardInput extends KeyBoardInput implements KeyListener,
 
 
 	
-	
+
 }
