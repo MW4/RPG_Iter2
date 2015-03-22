@@ -3,50 +3,70 @@ package com.oopsididitagain.rpg_iter2.controllers.menu_controllers;
 
 import com.oopsididitagain.rpg_iter2.controllers.Controller;
 import com.oopsididitagain.rpg_iter2.controllers.GameController;
+import com.oopsididitagain.rpg_iter2.model_view_interaction.AvatarCreationMenuViewInteraction;
 import com.oopsididitagain.rpg_iter2.model_view_interaction.ModelViewInteraction;
+import com.oopsididitagain.rpg_iter2.models.Game;
 import com.oopsididitagain.rpg_iter2.models.GameMap;
 import com.oopsididitagain.rpg_iter2.models.Position;
 import com.oopsididitagain.rpg_iter2.models.entities.Avatar;
+import com.oopsididitagain.rpg_iter2.models.menus.AvatarCreationMenu;
 import com.oopsididitagain.rpg_iter2.models.occupations.Smasher;
 import com.oopsididitagain.rpg_iter2.models.occupations.Sneak;
 import com.oopsididitagain.rpg_iter2.models.occupations.Summoner;
-import com.oopsididitagain.rpg_iter2.utils.KeyBoardInput;
+import com.oopsididitagain.rpg_iter2.models.stats.StatBlob;
+import com.oopsididitagain.rpg_iter2.utils.Command;
+import com.oopsididitagain.rpg_iter2.utils.Direction;
+
 
 public class AvatarCreationMenuController extends Controller {
 	public static AvatarCreationMenuController instance;
 	Avatar avatar;
 	GameMap gameMap;
-
+	private static AvatarCreationMenu avatarCreationMenu;
 	
 	private AvatarCreationMenuController(){
 		createAvatar();
 		createGameMap();
-
 	}
 	
 	public static AvatarCreationMenuController getInstance() {
 		if ( instance == null ){
+			avatarCreationMenu = new AvatarCreationMenu();
 			instance = new AvatarCreationMenuController();
 		}
 		return instance;
 	}
 	
 	@Override
-	public Controller takeInputAndUpdate(int key) {
+	public Controller takeInputAndUpdate(Command command) {
 		Controller controller = AvatarCreationMenuController.getInstance();
-		switch(key){
-		case 1:
-			assignSmasher();
+
+		switch(command){
+		case MOVE_EAST:
+			avatarCreationMenu.nextOption();
 			break;
-		case 2:
-			assignSummoner();
+		case MOVE_WEST:
+			avatarCreationMenu.previousOption();
 			break;
-		case 3:
-			assignSneak();
+		case ENTER:
+		case USE:
+			switch (avatarCreationMenu.getCurrentOption()) {
+			case Summoner:
+				assignSummoner();
+				break;
+			case Smasher:
+				assignSmasher();
+				break;
+			case Sneak:
+				assignSneak();
+				break;
+			}
+			Game game = new Game(this.avatar);
+			GameController gc = GameController.getInstance();
+			gc.setGame(game);
+			controller = gc;
 			break;
-		case 4:
-			controller = GameController.getInstance();
-			switchControllers((GameController)controller);
+		default:
 			break;
 		}
 		return controller;	
@@ -70,25 +90,20 @@ public class AvatarCreationMenuController extends Controller {
 		
 	}
 	private void createAvatar() {
-		Position position = new Position(0,0);
-		avatar = new Avatar("Avatar", position);
+		Position position = new Position(0,0,Direction.SOUTH);
+		StatBlob statBlob = new StatBlob(0, 0, 0, 0, 0, 0, 0, 20, 20);
+		avatar = new Avatar("avatar", position,statBlob );
 		
 	}
 	private void switchControllers(GameController controller){
 		controller.setAvatar(this.avatar);
 		controller.setMap(this.gameMap);
-		//gameMap.notifyObserver();
 	}
 
 	@Override
 	public ModelViewInteraction populateInteraction() {
-		// TODO Auto-generated method stub
-		return null;
+		AvatarCreationMenuViewInteraction avatarCreationMenuViewInteraction = new AvatarCreationMenuViewInteraction(this.avatarCreationMenu);
+		return avatarCreationMenuViewInteraction;
 	}
 
-	@Override
-	public KeyBoardInput getKeyBoardInput() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

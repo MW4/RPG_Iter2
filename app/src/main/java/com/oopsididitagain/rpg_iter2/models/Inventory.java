@@ -13,8 +13,8 @@ public class Inventory {
 
 	private List<InventoryItem> contents = new ArrayList<InventoryItem>();
 	
-	public void getItemAtIndex(int index) {
-		contents.get(index);
+	public InventoryItem getItemAtIndex(int index) throws IndexOutOfBoundsException {
+		return contents.get(index);
 	}
 	
 	public void add(TakeableItem item){
@@ -58,6 +58,9 @@ public class Inventory {
 		for(InventoryItem i: contents){
 			i.displayItem();
 		}
-		
+	}
+
+	public int size() {
+		return contents.size();
 	}
 }

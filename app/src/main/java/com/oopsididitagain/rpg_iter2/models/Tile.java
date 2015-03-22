@@ -8,6 +8,7 @@ import com.oopsididitagain.rpg_iter2.utils.Assetable;
 import com.oopsididitagain.rpg_iter2.utils.Direction;
 import com.oopsididitagain.rpg_iter2.utils.InvalidMovementException;
 import com.oopsididitagain.rpg_iter2.utils.Positionable;
+import com.oopsididitagain.rpg_iter2.utils.TileContentsProbeStatus;
 import com.oopsididitagain.rpg_iter2.utils.Tileable;
 import com.oopsididitagain.rpg_iter2.utils.TiledEntityVisitable;
 import com.oopsididitagain.rpg_iter2.utils.TiledProbeVisitable;
@@ -24,7 +25,18 @@ public class Tile implements Assetable, Positionable {
 		this.position = position;
 		this.terrain = terrain;
 	}
-	
+	public Entity getEntity(){
+		Entity e = null;
+		MovementProbe p = new MovementProbe();
+		this.checkTileContents(p);
+		if(p.checkStatus(TileContentsProbeStatus.ENTITY_DETECTED)){
+			e = p.getReturnedEntity();
+			
+		}
+		return e;
+		
+		
+	}
 	public void interact(Entity entity) {
 		for (TiledEntityVisitable entityVisitable: entityVisitables) {
 			try {
@@ -37,10 +49,17 @@ public class Tile implements Assetable, Positionable {
 		}
 	}
 
-	public void checkMovable(Probe probe) {
-		terrain.accept(probe);
+	public void checkMovable(MovementProbe movementProbe) {
+		terrain.accept(movementProbe);
 		for (TiledProbeVisitable probeVisitable: probeVisitables) 
-			probeVisitable.accept(probe);
+			probeVisitable.accept(movementProbe);
+	}
+	
+	public void checkTileContents(MovementProbe movementProbe) {
+		for (TiledEntityVisitable tev: entityVisitables) 
+			tev.accept(movementProbe);
+		for (TiledProbeVisitable tpv: probeVisitables) 
+			tpv.accept(movementProbe);
 	}
 
 	@Override
