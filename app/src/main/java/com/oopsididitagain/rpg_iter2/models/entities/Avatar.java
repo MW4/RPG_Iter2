@@ -4,20 +4,21 @@ package com.oopsididitagain.rpg_iter2.models.entities;
  */
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import com.oopsididitagain.rpg_iter2.models.Armory;
 import com.oopsididitagain.rpg_iter2.models.MovementProbe;
 import com.oopsididitagain.rpg_iter2.models.Position;
 import com.oopsididitagain.rpg_iter2.models.Skill;
 import com.oopsididitagain.rpg_iter2.models.effects.Discount;
 import com.oopsididitagain.rpg_iter2.models.effects.Observe;
-import com.oopsididitagain.rpg_iter2.models.items.InventoryEquipableItem;
+import com.oopsididitagain.rpg_iter2.models.items.InventoryArmorItem;
 import com.oopsididitagain.rpg_iter2.models.items.InventoryItem;
 import com.oopsididitagain.rpg_iter2.models.items.InventoryUnusableItem;
+import com.oopsididitagain.rpg_iter2.models.items.InventoryWeaponItem;
 import com.oopsididitagain.rpg_iter2.models.items.TakeableItem;
 import com.oopsididitagain.rpg_iter2.models.occupations.Occupation;
 import com.oopsididitagain.rpg_iter2.models.stats.StatBlob;
@@ -31,28 +32,28 @@ import com.oopsididitagain.rpg_iter2.utils.Tileable;
 
 public class Avatar extends Entity implements StatModifiable {
 
-	private ArrayList<Skill> gameSkillList = new ArrayList<Skill>();
-	private ArrayList<Skill> fightSkillList = new ArrayList<Skill>();
-	private Map<String,Skill> passiveSkillList = new HashMap<String,Skill>();
+	
 	private Occupation occupation;
 	private StatCollection stats;
+	private Armory armory;
 
 	public Avatar(String id, Position position,StatBlob statblob) {
 		super(id, position,statblob);
-		
+		this.armory = new Armory();
+		this.stats = new StatCollection(armory,statblob);
 	}
 
 	public void setOccupation(Occupation occupation) {
-		int currentFightIndex = 0;
-		int currentSkillIndex = 0;
 		this.occupation = occupation;
-		giveBaseSkills(currentFightIndex,currentSkillIndex);
-		occupation.giveSkills(gameSkillList,fightSkillList,passiveSkillList);
-		
+		giveBaseSkills();
+		occupation.giveSkills();
 	}
 
-	private void giveBaseSkills(int fightIndex, int skillIndex) {
+	private void giveBaseSkills() {
 		//bargain passive
+		ArrayList<Skill> gameSkillList = occupation.getGameSkillList();
+		ArrayList<Skill> fightSkillList = occupation.getFightSkillList();
+		Map<String,Skill> passiveSkillList = occupation.getPassiveSkillList();
 		
 		Skill bargain = new Skill(Skill.BARGAIN);
 		Discount discount = new Discount(.05);
@@ -81,79 +82,49 @@ public class Avatar extends Entity implements StatModifiable {
 	}
 	
 	public Skill getActiveSkill(Command command) {//this needs to differentiate between the states
-		Skill skill = null;
-		try {
-			switch(command) {
-			case SKILLONE: skill = gameSkillList.get(0);
-			break;
-			case SKILLTWO: skill = gameSkillList.get(1);
-			break;
-			case SKILLTHREE: skill = gameSkillList.get(2);
-			break;
-			case SKILLFOUR: skill = gameSkillList.get(3);
-			break;
-			case SKILLFIVE: skill = gameSkillList.get(4);
-			break;
-			case SKILLSIX: skill = gameSkillList.get(5);
-			break;
-			default: return null;
-			}
-		} catch(Exception ex) {
-			System.out.println("Probably tried to press a skill that wasn't existent!");
-			ex.printStackTrace();
-			return null;
-		}
-		return skill;
+		return occupation.getActiveSkill(command);
 	}
+
+	
 	public Skill getActiveFightSkill(Command command) {//this needs to differentiate between the states
-		Skill skill = null;
-		try {
-			switch(command) {
-			case SKILLONE: skill = fightSkillList.get(0);
-			break;
-			case SKILLTWO: skill = fightSkillList.get(1);
-			break;
-			case SKILLTHREE: skill = fightSkillList.get(2);
-			break;
-			case SKILLFOUR: skill = fightSkillList.get(3);
-			break;
-			case SKILLFIVE: skill = fightSkillList.get(4);
-			break;
-			case SKILLSIX: skill = fightSkillList.get(5);
-			break;
-			default: return null;
-			}
-		} catch(Exception ex) {
-			System.out.println("Probably tried to press a skill that wasn't existent!");
-			ex.printStackTrace();
-			return null;
-		}
-		return skill;
+		return occupation.getFightSkill(command);
 	}
 
 	public Skill getPassiveSkill(String skill) {//this needs to differentiate between the states
-		return passiveSkillList.get(skill);
+		return occupation.getPassiveSkill(skill);
 	}
 	
 	public LinkedList<String> getActiveSkillList(){
-		LinkedList<String> skillStrings = new LinkedList<String>();
-		for(Skill s: gameSkillList){
-			skillStrings.add(s.getName());
-		}
-		return skillStrings;
+		return occupation.getGameSkillListString();
 	}
 	
 	public LinkedList<String> getFightSkillList(){
-		LinkedList<String> skillStrings = new LinkedList<String>();
-		for(Skill s: fightSkillList){
-			skillStrings.add(s.getName());
-		}
-		return skillStrings;
+		return occupation.getFightSkillListString();
 	}
 	
-	public void visit(InventoryEquipableItem item) {
-		// ArmoryStuff
-		// armory.add(item);
+	public void visit(InventoryWeaponItem item) {
+		InventoryWeaponItem conflict;
+		if (item.isEquipped())
+			conflict = armory.unequip(item);
+		else {
+			conflict = armory.equip(item);
+			stats.mergeBlob(item.statBlob());
+		}
+
+		if (conflict != null) 
+			stats.detachBlob(conflict.statBlob());
+	}
+
+	public void visit(InventoryArmorItem item) {
+		InventoryArmorItem conflict;
+		if (item.isEquipped())
+			conflict = armory.unequip(item);
+		else {
+			conflict = armory.equip(item);
+			stats.mergeBlob(item.statBlob());
+		}
+		if (conflict != null) 
+			stats.detachBlob(conflict.statBlob());
 	}
 
 	public void visit(InventoryUnusableItem item) {
@@ -204,6 +175,19 @@ public class Avatar extends Entity implements StatModifiable {
 	public void attemptInhibition(MovementProbe movementProbe) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public String StatToString(){
+		return stats.primaryViewport() + stats.derivedViewport();
+	}
+
+	public void minusUnusedSkillPoints() {
+		this.stats.minusUnusedSkillPoints();
+		
+	}
+
+	public int getUnusedPoints() {
+		return stats.getUnusedPoints();
 	}
 
 	
