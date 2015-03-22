@@ -2,12 +2,10 @@ package com.oopsididitagain.rpg_iter2.controllers.menu_controllers;
 
 import com.oopsididitagain.rpg_iter2.controllers.Controller;
 import com.oopsididitagain.rpg_iter2.controllers.ExitGameController;
-import com.oopsididitagain.rpg_iter2.controllers.GameController;
 import com.oopsididitagain.rpg_iter2.model_view_interaction.MainMenuViewInteraction;
 import com.oopsididitagain.rpg_iter2.models.menus.MainMenu;
 import com.oopsididitagain.rpg_iter2.models.menus.MainMenu.Option;
-import com.oopsididitagain.rpg_iter2.utils.Commands;
-import com.oopsididitagain.rpg_iter2.utils.keyboardInput.*;
+import com.oopsididitagain.rpg_iter2.utils.Command;
 
 /**
  * In charge of handling input in main menu_controllers
@@ -16,22 +14,20 @@ import com.oopsididitagain.rpg_iter2.utils.keyboardInput.*;
  */
 public class MainMenuController extends Controller {
 
-	private static MainMenuController instance;
+	public static MainMenuController instance;
 
-	private static MainMenu mainMenu;
-	private MainMenuViewInteraction mainMenuView;
+    private static MainMenu mainMenu;
+    private MainMenuViewInteraction mainMenuView;
 
-	private MainMenuKeyboardInput keyboardInput;
+    private Controller controllerToReturn;
 
-	private Controller controllerToReturn;
 
-	private MainMenuController() {
+	private MainMenuController(){
 
-		this.keyboardInput = new MainMenuKeyboardInput(mainMenu);
 	}
 
 	public static MainMenuController getInstance() {
-		if (instance == null) {
+		if ( instance == null ){
 			mainMenu = new MainMenu();
 			instance = new MainMenuController();
 		}
@@ -39,18 +35,18 @@ public class MainMenuController extends Controller {
 	}
 
 	@Override
-	public Controller takeInputAndUpdate(int key) {
+	public Controller takeInputAndUpdate(Command command) {
 		controllerToReturn = this;
 
-		switch (key) {
-		case Commands.MOVE_SOUTH:
+		switch (command) {
+		case MOVE_SOUTH:
 			mainMenu.nextOption();
 			break;
-		case Commands.MOVE_NORTH:
+		case MOVE_NORTH:
 			mainMenu.previousOption();
 			break;
-		case Commands.ENTER:
-		case Commands.USE:
+		case ENTER:
+		case USE:
 			doSelectedOption();
 			break;
 		default:
@@ -67,10 +63,12 @@ public class MainMenuController extends Controller {
 			controllerToReturn = AvatarCreationMenuController.getInstance();
 			break;
 		case ExitGame:
+			controllerToReturn = ExitGameController.getInstance();
 			break;
 		case Load:
 			break;
 		case Options:
+			controllerToReturn = OptionsFromStartMenuController.getInstance();
 			break;
 		default:
 			break;
@@ -83,9 +81,5 @@ public class MainMenuController extends Controller {
 		return mainMenuView;
 	}
 
-	@Override
-	public MainMenuKeyboardInput getKeyBoardInput() {
-		return keyboardInput;
-	}
 
 }
